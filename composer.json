@@ -1,5 +1,5 @@
 {
-    "name": "mpaleo/scaffolder",
+    "name": "codificar/scaffolder",
     "description": "Laravel scaffolder",
     "license": "MIT",
     "keywords": [
@@ -15,6 +15,10 @@
         {
             "name": "Michael Paleo",
             "email": "github@michaelpaleo.com"
+        },
+        {
+            "name": "Raphael Canguçu",
+            "email": "raphael.cangucu@codificar.com.br"
         }
     ],
     "require": {
