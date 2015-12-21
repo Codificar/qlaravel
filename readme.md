@@ -1,9 +1,9 @@
-# Laravel scaffolder
+# Laravel scaffolder based on [Laravel scaffolder by mpaleo](http://github.com/mpaleo/scaffolder)
 ![Scaffolder for laravel](https://cloud.githubusercontent.com/assets/5132565/11066969/17feb094-87a9-11e5-96cb-1402e4c7aaca.png)
 [![Software license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Quality score](https://img.shields.io/scrutinizer/g/mpaleo/scaffolder.svg?style=flat-square)](https://scrutinizer-ci.com/g/mpaleo/scaffolder)
+[![Quality score](https://img.shields.io/scrutinizer/g/codificar/scaffolder.svg?style=flat-square)](https://scrutinizer-ci.com/g/codificar/scaffolder)
 [![Laravel version](https://img.shields.io/badge/for%20laravel-5.1-orange.svg?style=flat-square)](https://github.com/laravel/framework/tree/5.1)
-[![Waffle board](https://img.shields.io/badge/waffle.io-Go-blue.svg?style=flat-square)](https://waffle.io/mpaleo/scaffolder)
+[![Waffle board](https://img.shields.io/badge/waffle.io-Go-blue.svg?style=flat-square)](https://waffle.io/codificar/scaffolder)
 
 Remove the headache of creating over and over again the base code for most of your projects. Scaffolder is tailored following the principle that the development process must be a happy thing so, code and enjoy !
 You are free to extend it the way you need. This package only generate things that you need to start, always keeping the code clean and abstract. Are you hungry ? Fork it !
@@ -15,8 +15,8 @@ You are free to extend it the way you need. This package only generate things th
     ```json
     "laravelcollective/html": "5.1.*",
     "yajra/laravel-datatables-oracle": "~5.0",
-    "mpaleo/scaffolder-theme-material": "dev-master",
-    "mpaleo/scaffolder": "dev-master",
+    "codificar/scaffolder-theme-material": "dev-master",
+    "codificar/scaffolder": "dev-master",
     ```
 3. Update your packages
 
@@ -46,7 +46,7 @@ First you need to publish the configuration files and assets
 ./artisan vendor:publish --provider="ScaffolderTheme\ScaffolderThemeServiceProvider" --force
 ```
 
-Here we are using the theme [mpaleo/scaffolder-theme-material](https://github.com/mpaleo/scaffolder-theme-material), but you can fork it, and do whatever you want/need :)
+Here we are using the theme [codificar/scaffolder-theme-material](https://github.com/codificar/scaffolder-theme-material), but you can fork it, and do whatever you want/need :)
 
 At this point, you already can start to scaffold things. You have two ways to use the package.
 
@@ -64,19 +64,19 @@ The `app.json` file contains global settings, also you will get some demo files 
 
 This command generate the application using the files that you have provided.
 ```bash
-./artisan mpaleo.scaffolder:generate
+./artisan scaffolder:generate
 ```
 
 For instance, when you update the package, you should clear the cache files stored in `{laravel-root}\scaffolder-config\cache`
 ```bash
-./artisan mpaleo.scaffolder:cache:clear
+./artisan scaffolder:cache:clear
 ```
 
 ##### User interface way (Lazy devs)
 All you need to do, is go to your `http://{crazyhost}/scaffolder/generator` and fill some inputs :)
 
 ##### Next steps
-Check out the [wiki](https://github.com/mpaleo/scaffolder/wiki) to get more information about things that you need to know
+Check out the [wiki](https://github.com/codificar/scaffolder/wiki) to get more information about things that you need to know
 
 ## Contributing
 Just let me know your ideas and let's work together
