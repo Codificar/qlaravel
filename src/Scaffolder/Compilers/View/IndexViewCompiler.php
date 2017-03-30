@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\File;
 use Scaffolder\Compilers\AbstractViewCompiler;
 use Scaffolder\Compilers\Support\FileToCompile;
 use Scaffolder\Compilers\Support\PathParser;
+use Scaffolder\Support\Directory;
 
 class IndexViewCompiler extends AbstractViewCompiler
 {
@@ -52,7 +53,12 @@ class IndexViewCompiler extends AbstractViewCompiler
      */
     protected function store($modelName, $scaffolderConfig, $compiled, FileToCompile $fileToCompile)
     {
-        $path = PathParser::parse($scaffolderConfig->paths->views) . strtolower($modelName) . '/index.blade.php';
+        $folder = PathParser::parse($scaffolderConfig->paths->views) . strtolower($modelName) ;
+        
+        // create folder directory
+        Directory::createIfNotExists($folder, 0755, true);
+
+        $path = $folder  . '/index.blade.php';
 
         // Store in cache
         if ($fileToCompile->cached)

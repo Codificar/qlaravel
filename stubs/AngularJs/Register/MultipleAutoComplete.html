@@ -1,0 +1,16 @@
+<!-- Multiple auto complete -->
+
+					<div class="form-title form-title-scaffolder"> Multiple Auto complete </div>
+
+					<md-contact-chips
+				        ng-model="vm.contactsChips"
+				        md-contacts="vm.querySearchChips($query)"
+				        md-contact-name="name" 
+				        md-contact-image="image" 
+				        md-contact-email="email"
+				        md-require-match="true"
+				        md-highlight-flags="i"
+				        filter-selected="vm.filterSelected"
+				        mdChipsCtrl.items.length > 0
+				        placeholder="Escolha um item ...">
+				    </md-contact-chips>

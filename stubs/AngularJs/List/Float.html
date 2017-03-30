@@ -1,0 +1,25 @@
+
+						<md-input-container class="md-block form-item-input input-interval">
+
+							<label translate class="shrink-label">{{table_name}}.columns.{{field}}</label>
+							<div layout="row">							
+								<div flex>
+									<md-input-container class="md-block">
+										<label translate>Igual a</label>
+										<input type="number" pattern="\d*" name="{{field}}" ng-model="vm.searchParams.filters.{{table_name}}.{{field}}" {{field_validation}}>
+									</md-input-container>
+								</div>
+								<div flex>
+									<md-input-container class="md-block">
+										<label translate>Maior que</label>
+										<input type="number" pattern="\d*" name="{{field}}" ng-model="vm.searchParams.filters.{{table_name}}.{{field}}.start" {{field_validation}}>
+									</md-input-container>
+								</div>
+								<div flex>
+									<md-input-container class="md-block">
+										<label translate>Menor que</label>
+										<input type="number" pattern="\d*" name="{{field}}" ng-model="vm.searchParams.filters.{{table_name}}.{{field}}.end" {{field_validation}}>
+									</md-input-container>
+								</div>		
+							</div>
+						</md-input-container>

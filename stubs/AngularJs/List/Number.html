@@ -1,0 +1,24 @@
+
+						<md-input-container class="md-block form-item-input input-interval">
+							<label translate class="shrink-label">{{table_name}}.columns.{{field}}</label>		
+							<div layout="row">
+							<md-input-container flex="40">
+								<md-select ng-model="{{table_name}}.{{field}}.select" ng-init="{{table_name}}.{{field}}.select=0" md-on-close="vm.searchParams.filters.{{table_name}}.{{field}}=''">
+									<md-option value="0"  ng-selected="true">Igual</md-option>
+									<md-option value="1">Intervalo</md-option>
+								</md-select>
+							</md-input-container>
+							<md-input-container class="md-block" flex="60" ng-show="{{table_name}}.{{field}}.select == 0">
+								<label translate>Valor</label>
+								<input type="number" name="{{field}}" ng-model="vm.searchParams.filters.{{table_name}}.{{field}}" >
+							</md-input-container>
+							<md-input-container class="md-block" flex="30" ng-show="{{table_name}}.{{field}}.select == 1">
+								<label translate>Maior que</label>
+								<input type="number" name="{{field}}" ng-model="vm.searchParams.filters.{{table_name}}.{{field}}.start" >
+							</md-input-container>
+							<md-input-container class="md-block" flex="30" ng-show="{{table_name}}.{{field}}.select == 1">
+								<label translate>Menor que</label>
+								<input type="number" name="{{field}}" ng-model="vm.searchParams.filters.{{table_name}}.{{field}}.end" >
+							</md-input-container>	
+						</div>
+						</md-input-container>		

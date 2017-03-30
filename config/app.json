@@ -1,31 +1,59 @@
 {
-    "name": "Starter app",
-    "userInterface": {
-        "pageTitle": "Cool application",
-        "theme": {
-            "primaryColor": "indigo",
-            "accentColor": "pink"
-        }
-    },
-    "paths": {
-        "migrations": "base:database/migrations/",
-        "models": "app:Models/",
-        "repositories": "app:Libraries/Repositories/",
-        "controllers": "app:Http/Controllers/",
-        "views": "base:resources/views/",
-        "assets": "base:public/",
-        "routes": "app:Http/routes.php"
-    },
-    "namespaces": {
-        "models": "App\\Models",
-        "repositories": "App\\Libraries\\Repositories",
-        "controllers": "App\\Http\\Controllers"
-    },
-    "inheritance": {
-        "controller": "Scaffolder\\Controller\\AppBaseController",
-        "model": "Illuminate\\Database\\Eloquent\\Model"
-    },
-    "routing": {
-        "prefix": "scaffolder"
-    }
+	"name": "Scaffolder App",
+	"userInterface": {
+		"pageTitle": "Codificar Scaffolder",
+		"theme": {
+			"primaryColor": "indigo",
+			"accentColor": "pink"
+		}
+	},
+	"generators": {
+		"api":{
+			"paths":
+			{
+				"base": "base:drafts/api/",
+				"migrations": "base:drafts/api/database/migrations/",
+				"models": "base:drafts/api/app/Models/",
+				"repositories": "base:drafts/api/app/Libraries/Repositories/",
+				"controllers": "base:drafts/api/app/Http/Controllers/",
+				"routes": "base:drafts/api/app/Http/"
+			}, 
+
+			"namespaces": {
+				"models": "App\\Models",
+				"repositories": "App\\Libraries\\Repositories",
+				"controllers": "App\\Http\\Controllers"
+			},
+			"inheritance": {
+				"controller": "Scaffolder\\Controller\\AppBaseController",
+				"model": "Illuminate\\Database\\Eloquent\\Model"
+			},
+			"routing": {
+				"prefix": "api"
+			}
+		},
+		"angularjs":{
+			"paths":
+			{
+				"pages": "base:drafts/angularjs/app/main/pages/",
+				"index": "base:drafts/angularjs/app/",
+				"resources": "base:resources/angularjs/"
+			},
+			"routing": {
+				"prefix": "api"
+			}
+		},
+		"blade":{
+			"paths":
+			{
+				"views": "base:drafts/blade/resources/views/",
+				"layouts": "base:drafts/blade/resources/views/layouts",
+				"assets": "base:drafts/blade/public/"
+			},
+			"routing": {
+				"prefix": "api"
+			}
+		}
+
+	}
 }

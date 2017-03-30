@@ -6,105 +6,169 @@ use Illuminate\Support\Facades\File;
 use Scaffolder\Compilers\AbstractCompiler;
 use Scaffolder\Compilers\Support\FileToCompile;
 use Scaffolder\Compilers\Support\PathParser;
+use Scaffolder\Support\CamelCase;
 
 class RouteCompiler extends AbstractCompiler
 {
-    /**
-     * Compiles a route.
-     *
-     * @param      $stub
-     * @param      $modelName
-     * @param      $modelData
-     * @param      $scaffolderConfig
-     * @param      $hash
-     * @param null $extra
-     *
-     * @return mixed|void
-     */
-    public function compile($stub, $modelName, $modelData, $scaffolderConfig, $hash, $extra = null)
-    {
-        $this->stub = $stub;
+	protected $stubFilename = 'Routes.php' ;
 
-        $this->replaceResource($modelName);
+	protected $stubResourceFilename = 'ResourceRoute.php' ;
+	protected $stubResource  ;
 
-        return $this->stub;
-    }
 
-    /**
-     * Compiles a group of routes.
-     *
-     * @param $stub
-     * @param $compiledRoutes
-     * @param $scaffolderConfig
-     *
-     * @return mixed
-     */
-    public function compileGroup($stub, $compiledRoutes, $scaffolderConfig)
-    {
-        $this->stub = $stub;
+	public function __construct($scaffolderConfig, $modelData = null)
+	{
+		$this->stubsDirectory = __DIR__ . '/../../../../stubs/Api/';
+		parent::__construct($scaffolderConfig, null);
+		
+		$this->stubResource = File::get($this->stubsDirectory . $this->stubResourceFilename );
+	}
 
-        $this->replaceRoutes($compiledRoutes)
-            ->replacePrefix($scaffolderConfig->routing->prefix)
-            ->store(null, $scaffolderConfig, $this->stub, new FileToCompile(null, null));
+	/**
+	 * Replace and store the Stub.
+	 *
+	 * @return string
+	 */
+	public function replaceAndStore(){}
 
-        return $this->stub;
-    }
+	/**
+	 * Compiles a resource.
+	 *
+	 * @param      $hash
+	 * @param null $extra
+	 *
+	 * @return string
+	 */
+	public function compile($extra = null) {}
 
-    /**
-     * Store the compiled stub.
-     *
-     * @param               $modelName
-     * @param               $scaffolderConfig
-     * @param               $compiled
-     * @param FileToCompile $fileToCompile
-     *
-     * @return mixed|void
-     */
-    protected function store($modelName, $scaffolderConfig, $compiled, FileToCompile $fileToCompile)
-    {
-        File::append(PathParser::parse($scaffolderConfig->paths->routes), PHP_EOL . $compiled);
-    }
+	/**
+	 * Compiles a group of routes.
+	 *
+	 * @param      $hash
+	 * @param null $extra
+	 *
+	 * @return mixed
+	 */
+	public function compileGroup($compiledRoutes)
+	{
 
-    /**
-     * Replace the resource.
-     *
-     * @param $modelName
-     *
-     * @return $this
-     */
-    private function replaceResource($modelName)
-    {
-        $this->stub = str_replace('{{resource_lw}}', strtolower($modelName), $this->stub);
-        $this->stub = str_replace('{{resource}}', $modelName, $this->stub);
+		$this->replaceRoutes($compiledRoutes)
+			->replaceRoutePrefix()
+			->store(new FileToCompile(null, null));
 
-        return $this;
-    }
+		return $this->stub;
+	}
 
-    /**
-     * Replace compiled routes.
-     *
-     * @param $compiledRoutes
-     *
-     * @return $this
-     */
-    private function replaceRoutes($compiledRoutes)
-    {
-        $this->stub = str_replace('{{routes}}', $compiledRoutes, $this->stub);
 
-        return $this;
-    }
+	/**
+	 * Get output filename
+	 *
+	 *
+	 * @return $this
+	 */
+	protected function getOutputFilename()
+	{
+		$folder = PathParser::parse($this->scaffolderConfig->generator->paths->routes);
 
-    /**
-     * Replace the prefix.
-     *
-     * @param $prefix
-     *
-     * @return $this
-     */
-    private function replacePrefix($prefix)
-    {
-        $this->stub = str_replace('{{route_prefix}}', $prefix, $this->stub);
+		return $folder  . 'routes.php';
+	}
 
-        return $this;
-    }
+
+	/**
+	 * Replace the resource.
+	 *
+	 * @param $this->modelName
+	 *
+	 * @return string routeStub
+	 */
+	public function replaceResource($modelData)
+	{
+		
+		$routeStub = str_replace('{{resource_lw}}', strtolower($modelData->modelName), $this->stubResource);
+		$routeStub = str_replace('{{resource}}', $modelData->modelName, $routeStub);
+		$routeStub = str_replace('{{reverseRelationships}}', $this->replaceReverseRelationships($modelData), $routeStub);
+		$routeStub = str_replace('{{enum}}', $this->replaceEnum($modelData), $routeStub);
+
+		return $routeStub;
+	}
+
+	/**
+	 * Replace the reverse relationships.
+	 *
+	 * @param $this->modelData
+	 *
+	 * @return string functions
+	 */
+	public function replaceReverseRelationships($modelData)
+	{
+		$functions = '';
+
+		foreach ($modelData->reverseRelationships as $relationship)
+		{
+			if ($relationship)
+			{
+				$functionName = '';
+				if ($relationship->type == "hasOne")
+					$functionName = strtolower($relationship->modelName);
+				elseif ($relationship->type == "belongsToMany") 
+					$functionName = CamelCase::pluralize(strtolower($relationship->relatedTable));
+				else 
+					$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
+
+				$method = "\tRoute::get('{{resource_lw}}/{id}/{{function_name}}', '{{resource}}Controller@{{function_name}}');\n";
+				$method = str_replace('{{resource_lw}}', strtolower($modelData->modelName), $method);
+				$method = str_replace('{{function_name}}', $functionName, $method);
+				$method = str_replace('{{resource}}', $modelData->modelName, $method);
+
+				$functions .= $method;
+			}
+		}
+
+		return $functions;
+	}
+
+	/**
+	 * Replace the enum.
+	 *
+	 * @param $this->modelData
+	 *
+	 * @return string functions
+	 */
+	public function replaceEnum($modelData)
+	{
+		$functions = '';
+
+		foreach ($modelData->fields as $field)
+		{
+			if ($field->type->db == "enum")
+			{
+				$method = "\tRoute::get('{{resource_lw}}/{{field_name}}', '{{resource}}Controller@get{{field_name_uc}}Options');\n";
+				$method = str_replace('{{resource_lw}}', strtolower($modelData->modelName), $method);
+				$method = str_replace('{{field_name_uc}}', CamelCase::convertToCamelCase($field->name), $method);
+				$method = str_replace('{{field_name}}', $field->name, $method);
+				$method = str_replace('{{resource}}', $modelData->modelName, $method);
+
+				$functions .= $method;
+			}
+		}
+
+		return $functions;
+	}
+
+
+	/**
+	 * Replace compiled routes.
+	 *
+	 * @param $compiledRoutes
+	 *
+	 * @return $this
+	 */
+	private function replaceRoutes($compiledRoutes)
+	{
+		$this->stub = str_replace('{{routes}}', $compiledRoutes, $this->stub);
+
+		return $this;
+	}
+
+	
 }

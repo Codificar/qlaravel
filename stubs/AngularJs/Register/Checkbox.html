@@ -1,0 +1,39 @@
+<!-- Checkbox list -->
+
+								<div class="form-title form-title-scaffolder"> Checkox List </div>
+								
+								<fieldset class="fieldset-checkbox-list">
+									<legend class="demo-legend"> Componente de checkboxlist simples </legend>
+									<div ng-repeat="item in vm.checkboxlist">
+
+										<!-- Nivel 1 -->
+										<md-checkbox
+											aria-label="item.text" 
+											ng-click="vm.clickCheck(item)"
+											ng-checked="item.value"
+											class="form-item-input checkbox-item md-primary"> 
+											{{ item.text }}
+										</md-checkbox>
+
+										<!-- Nivel 2 -->
+										<div ng-repeat="children in item.children">
+											<md-checkbox
+												aria-label="children.text" 
+												ng-click="vm.clickCheck(children)"
+												ng-checked="children.value"
+												class="form-item-input checkbox-item md-primary {{children.class}}"> 
+												{{ children.text }}
+											</md-checkbox>
+
+											<!-- Nivel 3 -->
+											<md-checkbox
+												ng-repeat="newChildren in children.children"
+												aria-label="newChildren.text" 
+												ng-click="vm.clickCheck(newChildren)"
+												ng-checked="newChildren.value"
+												class="form-item-input checkbox-item md-primary {{newChildren.class}}"> 
+												{{ newChildren.text }}
+											</md-checkbox>
+										</div>
+									</div>				
+								</fieldset>

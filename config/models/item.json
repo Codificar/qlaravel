@@ -1,10 +1,12 @@
 {
     "modelLabel": "",
-    "tableName": "",
+    "tableName": "item",
+    "migrationPreRequisites": [],
     "skipMigration": false,
     "skipModel": false,
     "skipController": false,
     "skipViews": false,
+    "timeStamps": true,
     "fields": [
         {
             "name": "name",
@@ -23,12 +25,14 @@
             "validations": "max:255",
             "type": {
                 "db": "string",
-                "ui": "textarea"
+                "ui": "text"
             },
             "modifiers": "",
             "foreignKey": "",
             "index": "none",
             "hideInListings": false
         }
+    ],
+    "reverseRelationships": [
     ]
 }

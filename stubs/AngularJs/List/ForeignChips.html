@@ -1,0 +1,11 @@
+								
+								<fieldset>
+									<legend translate>{{related_table_lw}}.singular</legend>
+									<cd-chips ng-model="vm.searchParams.filters.{{table_name}}.{{related_table_lw_pl}}"
+										url="{{ vm.api.baseUrl }}/api/{{related_table_lw}}/query"
+										foreign="{{related_table_lw}}"
+										field-text="name"
+										edit-mode="{{vm.{{table_name}}.id}}"
+										get-checked-url="{{ vm.api.baseUrl }}/api/{{table_name}}/{{vm.{{table_name}}.id}}/{{related_table_lw_pl}}">
+									</cd-chips>
+								</fieldset>

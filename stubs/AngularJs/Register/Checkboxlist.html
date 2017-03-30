@@ -1,0 +1,46 @@
+								
+								<fieldset class="fieldset-checkbox-list fieldset-checkbox-list-tree">
+									<legend class="demo-legend"> Componente de checkboxlist simples </legend>
+									<div ng-repeat="item in vm.checkboxlistTree" ng-init="item.closeItems = false" class="component-checkbox-class">
+
+										<!-- Nivel 1 -->
+										<div class="row">
+											<div class="icon-item-list-tree" id="icon-cbl-{{item.id}}" ng-show="item.children.length > 0" ng-click="vm.clickMenuItem(item)"> 
+												<i class="icon icon-menu-down"></i> 
+											</div>
+											<md-checkbox
+												aria-label="item.text" 
+												ng-click="vm.clickCheck(item)"
+												ng-checked="item.value"
+												class="form-item-input checkbox-item md-primary"> 
+												{{ item.text }} 
+											</md-checkbox>
+										</div>
+
+										<!-- Nivel 2 -->
+										<div ng-repeat="children in item.children"  ng-init="children.closeItems = false" ng-hide="item.closeItems">
+											<div class="row" ng-show="children.children.length > 0">
+												<div class="icon-item-list-tree icon-children-1" id="icon-cbl-{{children.id}}" ng-click="vm.clickMenuItem(children)"> 
+													<i class="icon icon-menu-down"></i> 
+												</div>
+												<md-checkbox
+													aria-label="children.text" 
+													ng-click="vm.clickCheck(children)"
+													ng-checked="children.value"
+													class="form-item-input checkbox-item md-primary {{children.class}}"> 
+													{{ children.text }}
+												</md-checkbox>
+											</div>
+
+											<!-- Nivel 3 -->
+											<div class="row" ng-hide="children.closeItems" ng-repeat="newChildren in children.children"> 
+												<md-checkbox													
+													aria-label="newChildren.text" 
+													ng-click="vm.clickCheck(newChildren)"
+													ng-checked="newChildren.value"
+													class="form-item-input checkbox-item md-primary {{newChildren.class}}"> 
+													{{ newChildren.text }}
+												</md-checkbox>
+											</div>
+									</div>				
+								</fieldset>

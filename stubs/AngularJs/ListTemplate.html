@@ -1,0 +1,125 @@
+<div id="sample-list" class="page-layout simple simple-list right-sidenav page-list-scaff" layout="row">
+
+	<!-- CENTER -->
+	<div class="center" flex ms-scroll>
+
+		<!-- HEADER -->
+		<div class="header md-accent-bg" layout="column" layout-align="space-between">
+			
+			 <div class="breadcrumb col-sm-3" layout="row" layout-align="start right">
+				<md-icon md-font-icon="icon-home" class="s16"></md-icon>
+				<md-icon md-font-icon="icon-chevron-right" class="s16 separator"></md-icon>
+				<span class="parent" translate>{{table_name}}.plural</span>
+				<md-icon md-font-icon="icon-chevron-right" class="s16 separator"></md-icon>
+				<span class="parent" translate>nav.list</span>
+			</div>
+		</div>
+		<!-- / HEADER -->
+
+		<!-- CONTENT -->
+		<div class="content"> 
+
+			<div class="area-title">
+				<div class="title" translate="list.content.title" translate-value-entity="{{'{{table_name}}.singular' | translate}}"></div>
+				<md-button class="btn-new-item md-raised md-accent md-align-right button-form" ng-click="" ui-sref='app.{{table_name}}_register'> 
+					<i class="icon-plus"></i>
+					<span translate>list.new_item</span>
+				</md-button>
+			</div> 
+
+			<div cd-animation-filter expand="vm.expand" class="form-wrapper md-whiteframe-1dp filter-box">
+				<form name="filtersParams" class="md-inline-form filter-form" novalidate>
+
+					<!-- Box filter -->
+					<div class="filter-simple">
+						<div class="row">
+							<div class="item-filter-row filter-box-search">
+								<div class="icon-filter-btn-simple" ng-click="vm.simpleFilter()">
+									<i class="icon-magnify icon-simple-search"></i>
+								</div>
+								<md-input-container class="md-block form-item-input item-layout-collumns-1">
+									<label translate>list.filter.simple</label>
+									<input type="text" name="search" ng-model="vm.searchParams.filters.search" ng-disabled="vm.expand" ng-keyup="vm.getEnterClick($event)"> 
+								</md-input-container>
+							</div>
+							<div class="item-filter-row filter-box-options" ng-click="vm.searchParams.filters['{{table_name}}'] = {}">
+								<div id="filter-options-advanced" class="options-advanced">
+								</div>
+								<div class="icon-item-list-close icon-filter-expand"> 
+									<i class="icon icon-chevron-down"></i> 
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Title Optional -->
+					<!-- <div class="form-title" translate="list.content.subtitle" translate-value-entity="{{'{{table_name}}.plural' | translate}}"></div> -->
+
+					<!-- Fields -->
+					<div id="fields-advanced-options" class="advanced-options">
+				
+						<div class="fields layout-collumns-4">
+
+							{{columns_inputs}} 
+
+							{{eager_objects_inputs}} 
+
+							{{belongs_to_many_inputs}} 
+
+						</div>
+
+						<div class="actions-box">						
+							<md-button class="btn-clear-filter md-raised md-button md-default-theme md-light-button md-align-left button-form" translate-attr-aria-label="common_words.clean" ng-show="vm.isFiltered" ng-click="vm.removeFilter()">
+								<i class="icon icon-eraser icon-button-form"></i>
+								{{ 'common_words.clean' | translate }}
+							</md-button>
+							 <md-button class="md-raised md-accent md-align-right button-form" aria-label="{{ 'common_words.filter' | translate }}"  ng-click="vm.getFilter()">
+							 	<i class="icon icon-filter icon-button-form"></i>
+								<span ng-hide="vm.isFiltered">{{ 'common_words.filter' | translate }}</span>
+								<span ng-show="vm.isFiltered">{{ 'common_words.update' | translate }}</span>
+							</md-button>
+						</div>
+
+					</div>
+				</form>
+			</div>
+
+			<div class="header-table form-wrapper"> 
+				{{table_name}}
+				<div class="actions-items-selected" ng-show="vm.showActions">
+					<a ng-click="vm.removeItems()"> {{ 'common_words.remove_items' | translate }} </a>
+				</div> 
+			</div>
+			
+			<div ng-show="!vm.noItems" id="{{table_name}}_grid" ui-grid="vm.gridUiOpts" class="data-grid" ui-grid-pagination resize-ui-grid ui-grid-auto-resize ui-grid-exporter></div>
+			<div ng-show="vm.noItems" class="form-wrapper no-items md-whiteframe-1dp">
+				<i class="icon-comment-alert-outline"></i>
+				<span class="text-no-items"> {{ 'list.no_items' | translate }} </span> <br>
+				<span> {{ 'list.message_new_item' | translate }} <a ui-sref='app.{{table_name}}_register'> {{ 'list.link_new_item' | translate }} </a> </span>
+			</div>
+
+		</div>
+		<!-- / CONTENT -->
+
+	</div>
+	<!-- / CENTER -->
+
+	<!-- SIDENAV -->
+	<md-sidenav class="sidenav md-sidenav-right" md-is-open="false" md-component-id="sidenav" 
+				ms-scroll ms-sidenav-helper>
+
+		<div class="advanced-options">
+			<md-list>
+				<md-subheader class="md-no-sticky">{{ 'advanced_options.title' | translate }}</md-subheader>
+				<md-list-item ng-click="vm.exportItem('csv')"><p><span class="icon icon-file-excel"></span> {{ 'advanced_options.excel' | translate }}</p></md-list-item>
+				<md-divider></md-divider>
+				<md-list-item ng-click="vm.exportItem('pdf')"><p><span class="icon icon-file-pdf"></span> {{ 'advanced_options.pdf' | translate }}</p></md-list-item>
+				<md-divider></md-divider>
+				<md-list-item ng-click="vm.toggleColumns(ev)"><p><span class="icon icon-table-column-remove"></span> {{ 'advanced_options.choose_columns.title' | translate }}</p></md-list-item>
+			</md-list>
+		</div>
+
+	</md-sidenav>
+	<!-- / SIDENAV -->
+
+</div>

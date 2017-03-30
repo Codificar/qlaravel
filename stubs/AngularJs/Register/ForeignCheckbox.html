@@ -1,0 +1,6 @@
+								
+								<fieldset>
+									<legend translate>{{related_table_lw}}.singular</legend>
+									<cd-checkbox url="{{ vm.api.baseUrl }}/api/{{related_table_lw}}/query" 
+									field-text="name" ng-model="vm.{{table_name}}.{{related_table_lw_pl}}" get-checked-url="{{ vm.api.baseUrl }}/api/{{table_name}}/{{vm.{{table_name}}.id}}/{{related_table_lw_pl}}" edit-mode="{{vm.{{table_name}}.id}}"></cd-checkbox>
+								</fieldset>

@@ -1,0 +1,51 @@
+<div id="forms" class="page-layout simple fullwidth doc-page page-register-scaff" layout="column">
+
+	<div class="header md-accent-bg" layout="row" layout-align="space-between">
+		<div layout="column" layout-align="space-between">
+			<div class="breadcrumb" layout="row" layout-align="start center">
+				<md-icon md-font-icon="icon-home" class="s16"></md-icon>
+				<md-icon md-font-icon="icon-chevron-right" class="s16 separator"></md-icon>
+				<span class="parent" translate>{{table_name}}.plural</span>
+				<md-icon md-font-icon="icon-chevron-right" class="s16 separator"></md-icon>
+				<span class="parent" translate>nav.register</span>
+			</div>
+
+			<div class="title" translate="register.content.title" translate-value-entity="{{'{{table_name}}.singular' | translate}}"></div>
+		</div>
+	</div>  
+    
+	<div class="content" layout="column">
+		<div class="area-title">
+			<div class="title" translate="register.content.title" translate-value-entity="{{'{{table_name}}.singular' | translate}}"></div>
+		</div>
+		<div class="form-wrapper md-whiteframe-1dp" flex> 
+					  
+			<form name="basicForm" novalidate>
+				<div class="fields layout-collumns-4">
+
+						<!-- <div class="form-title form-title-scaffolder"></div> -->
+						{{columns_inputs}} 
+
+						{{eager_objects_inputs}} 
+
+						{{belongs_to_many_inputs}} 
+																					   
+						<div class="buttons-form">
+							<md-button type="submit" class="md-raised md-accent button-cancel button-form" ng-click="vm.cancelAction();">
+								<i class="icon icon-cancel icon-button-form"></i>
+								{{ 'common_words.cancel' | translate }}
+							</md-button>
+							<md-button type="submit" class="md-raised md-accent button-delete button-form" ng-click="vm.confirmDeleteAction($event);"  ng-disabled="!vm.{{table_name}}.id">
+								<i class="icon icon-delete icon-button-form"></i>
+								{{ 'common_words.delete' | translate }}
+							</md-button>
+							<md-button type="submit" class="md-raised md-accent button-save button-form" aria-label="Submit" ng-click="vm.sendForm();" ng-disabled="basicForm.$invalid">
+								<i class="icon icon-content-save icon-button-form"></i>
+								{{ 'common_words.save' | translate }}
+							</md-button>
+						</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

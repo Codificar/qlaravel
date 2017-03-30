@@ -10,155 +10,130 @@ use Scaffolder\Compilers\Support\PathParser;
 
 class MigrationCompiler extends AbstractCompiler
 {
-    private $date;
+	private $date;
 
-    public function __construct()
-    {
-        $this->date = Carbon::now();
-    }
+	protected $cachePrefix 	= 'migration_';
+	protected $stubFilename = 'Migration.php' ;
 
-    /**
-     * Compiles a migration.
-     *
-     * @param      $stub
-     * @param      $modelName
-     * @param      $modelData
-     * @param      $scaffolderConfig
-     * @param      $hash
-     * @param null $extra
-     *
-     * @return mixed|void
-     */
-    public function compile($stub, $modelName, $modelData, $scaffolderConfig, $hash, $extra = null)
-    {
-        // Add time to migration
-        $this->date->addSeconds(5);
+	public function __construct($scaffolderConfig, $modelData = null)
+	{
+		$this->stubsDirectory = __DIR__ . '/../../../../stubs/Api/';
 
-        if (File::exists(base_path('scaffolder-config/cache/migration_' . $hash . self::CACHE_EXT)))
-        {
-            return $this->store($modelName, $scaffolderConfig, '', new FileToCompile(true, $hash));
-        }
-        else
-        {
-            $this->stub = $stub;
+		parent::__construct($scaffolderConfig, $modelData);
 
-            return $this->replaceClassName($modelName)
-                ->replaceTableName($modelName)
-                ->addFields($modelData)
-                ->store($modelName, $scaffolderConfig, $this->stub, new FileToCompile(false, $hash));
-        }
-    }
+		$this->date = Carbon::now();
+	}
 
-    /**
-     * Store the compiled stub.
-     *
-     * @param               $modelName
-     * @param               $scaffolderConfig
-     * @param               $compiled
-     * @param FileToCompile $fileToCompile
-     *
-     * @return string
-     */
-    protected function store($modelName, $scaffolderConfig, $compiled, FileToCompile $fileToCompile)
-    {
-        $path = PathParser::parse($scaffolderConfig->paths->migrations) . $this->date->format('Y_m_d_His') . '_create_' . strtolower($modelName) . 's_table.php';
+	/**
+	 * Replace and store the Stub.
+	 *
+	 * @return string
+	 */
+	public function replaceAndStore()
+	{
+		
+		return $this->addFields()
+					->store(new FileToCompile(false, $this->modelData->modelHash));
+		
+	}
 
-        // Store in cache
-        if ($fileToCompile->cached)
-        {
-            File::copy(base_path('scaffolder-config/cache/migration_' . $fileToCompile->hash . self::CACHE_EXT), $path);
-        }
-        else
-        {
-            File::put(base_path('scaffolder-config/cache/migration_' . $fileToCompile->hash . self::CACHE_EXT), $compiled);
-            File::copy(base_path('scaffolder-config/cache/migration_' . $fileToCompile->hash . self::CACHE_EXT), $path);
-        }
+	/**
+	 * Get output filename
+	 *
+	 *
+	 * @return $this
+	 */
+	protected function getOutputFilename()
+	{
 
-        return $path;
-    }
+		return  PathParser::parse($this->scaffolderConfig->generator->paths->migrations) . $this->date->format('Y_m_d_') . str_pad($this->modelData->migrationOrder, 2, 0, STR_PAD_LEFT) . '_create_' . strtolower($this->modelName) . '_table.php';
+	}
 
-    /**
-     * Replace the table name.
-     *
-     * @param $modelName
-     *
-     * @return $this
-     */
-    private function replaceTableName($modelName)
-    {
-        $this->stub = str_replace('{{table_name}}', strtolower($modelName), $this->stub);
+	/**
+	 * Add fields.
+	 *
+	 * @param $modelData
+	 *
+	 * @return $this
+	 */
+	private function addFields()
+	{
+		// Default primary key
+		$fields = "\t\t\t\$table->increments('id');" . PHP_EOL . PHP_EOL;
 
-        return $this;
-    }
+		// Check primary key
+		# TODO FIX, primary
+		
+		foreach ($this->modelData->fields as $field)
+		{
+			$parsedModifiers = '';
 
-    /**
-     * Add fields.
-     *
-     * @param $modelData
-     *
-     * @return $this
-     */
-    private function addFields($modelData)
-    {
-        // Default primary key
-        $fields = "\t\t\t\$table->increments('id');" . PHP_EOL . PHP_EOL;
+			if($field->index == "primary")
+				continue ;
+			if($this->modelData->timeStamps && $field->name == "created_at")
+				continue ;
+			if($this->modelData->timeStamps && $field->name == "updated_at")
+				continue ;
 
-        // Check primary key
-        foreach ($modelData->fields as $field)
-        {
-            if ($field->index == 'primary')
-            {
-                $fields = '';
-                break;
-            }
-        }
+			// Check modifiers
+			if (!empty($field->modifiers))
+			{
+				$modifiersArray = explode(':', $field->modifiers);
 
-        foreach ($modelData->fields as $field)
-        {
-            $parsedModifiers = '';
+				foreach ($modifiersArray as $modifier)
+				{
+					$modifierAndValue = explode(',', $modifier);
 
-            // Check modifiers
-            if (!empty($field->modifiers))
-            {
-                $modifiersArray = explode(':', $field->modifiers);
+					if (count($modifierAndValue) == 2)
+					{
+						$parsedModifiers .= '->' . $modifierAndValue[0] . '(' . $modifierAndValue[1] . ')';
+					}
+					else
+					{
+						$parsedModifiers .= '->' . $modifierAndValue[0] . '()';
+					}
+				}
+			}
 
-                foreach ($modifiersArray as $modifier)
-                {
-                    $modifierAndValue = explode(',', $modifier);
+			// Check foreign key for unsigned modifier
+			if ($field->foreignKey)
+			{
+				$parsedModifiers .= '->unsigned()';
+			}
 
-                    if (count($modifierAndValue) == 2)
-                    {
-                        $parsedModifiers .= '->' . $modifierAndValue[0] . '(' . $modifierAndValue[1] . ')';
-                    }
-                    else
-                    {
-                        $parsedModifiers .= '->' . $modifierAndValue[0] . '()';
-                    }
-                }
-            }
+			// Check indexes
+			if ($field->index != 'none')
+			{
+				$fields .= sprintf("\t\t\t\$table->%s('%s')%s->%s();" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers, $field->index);
+			}
+			else
+			{
+				if ($field->type->db == "enum") {
+					$items = '';
+					foreach ($field->options as $key => $option) {
+						$items .= "'" . $option . "'";
+						if ($key < (count($field->options) - 1))
+							$items .= ", ";
+					}
 
-            // Check indexes
-            if ($field->index != 'none')
-            {
-                $fields .= sprintf("\t\t\t\$table->%s('%s')%s->%s();" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers, $field->index);
-            }
-            else
-            {
-                $fields .= sprintf("\t\t\t\$table->%s('%s')%s;" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers);
-            }
+					$fields .= sprintf("\t\t\t\$table->%s('%s', array(%s));" . PHP_EOL, $field->type->db, $field->name, $items);
+				}
+				else
+					$fields .= sprintf("\t\t\t\$table->%s('%s')%s;" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers);
+			}
 
-            // Check foreign key
-            if (!empty($field->foreignKey))
-            {
-                $foreignKey = explode(':', $field->foreignKey);
-                $fields .= sprintf("\t\t\t\$table->foreign('%s')->references('%s')->on('%s');" . PHP_EOL . PHP_EOL, $field->name, $foreignKey[0], $foreignKey[1]);
-            }
-        }
+			// Check foreign key
+			if ($field->foreignKey)
+			{
+				$fields .= sprintf("\t\t\t\$table->foreign('%s')->references('%s')->on('%s');" . PHP_EOL . PHP_EOL, $field->name, $field->foreignKey->field, $field->foreignKey->table);
+			}
+		}
 
-        $fields .= PHP_EOL . "\t\t\t\$table->timestamps();" . PHP_EOL;
+		if($this->modelData->timeStamps)
+			$fields .= PHP_EOL . "\t\t\t\$table->timestamps();" . PHP_EOL;
 
-        $this->stub = str_replace('{{fields}}', $fields, $this->stub);
+		$this->stub = str_replace('{{fields}}', $fields, $this->stub);
 
-        return $this;
-    }
+		return $this;
+	}
 }
