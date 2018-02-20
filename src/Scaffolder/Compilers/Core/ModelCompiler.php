@@ -93,9 +93,15 @@ class ModelCompiler extends AbstractCompiler
 		{
 			if($field->index == "primary")
 				continue ;
+<<<<<<< HEAD
 			if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "created_at")
 				continue ;
 			if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "updated_at")
+=======
+			if($this->modelData->timeStamps && $field->name == "created_at")
+				continue ;
+			if($this->modelData->timeStamps && $field->name == "updated_at")
+>>>>>>> cc0dae1e6ae9e669d78b7fe68022a5ef4322943d
 				continue ;
 
 			if ($firstIteration)
@@ -162,9 +168,15 @@ class ModelCompiler extends AbstractCompiler
 		{
 			if($field->index == "primary")
 				continue ;
+<<<<<<< HEAD
 			if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "created_at")
 				continue ;
 			if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "updated_at")
+=======
+			if($this->modelData->timeStamps && $field->name == "created_at")
+				continue ;
+			if($this->modelData->timeStamps && $field->name == "updated_at")
+>>>>>>> cc0dae1e6ae9e669d78b7fe68022a5ef4322943d
 				continue ;
 
 			if ($firstIteration)
@@ -192,7 +204,11 @@ class ModelCompiler extends AbstractCompiler
 	 */
 	private function setTimeStamps()
 	{
+<<<<<<< HEAD
 		if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps)
+=======
+		if($this->modelData->timeStamps)
+>>>>>>> cc0dae1e6ae9e669d78b7fe68022a5ef4322943d
 		{
 			$this->stub = str_replace('{{timestamps}}', ' ', $this->stub);
 		} else {
@@ -280,6 +296,7 @@ class ModelCompiler extends AbstractCompiler
 		$functions = '';
 
 		$eagerArray = [];
+<<<<<<< HEAD
 		
 		if(isset($this->modelData->reverseRelationships)){
 			foreach ($this->modelData->reverseRelationships as $relationship)
@@ -321,6 +338,49 @@ class ModelCompiler extends AbstractCompiler
 					}
 				}		
 			}
+=======
+
+		foreach ($this->modelData->reverseRelationships as $relationship)
+		{
+			
+			// Check foreign key
+			if ($relationship->foreignKey)
+			{
+				$reverseRelationshipStub = "";
+				$functionName = '';
+				if ($relationship->type == "hasOne")
+					$functionName = strtolower($relationship->modelName);
+				else 
+					$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
+				
+				if ($relationship->type == "belongsToMany") {
+					$reverseRelationshipOriginalStub = File::get($this->stubsDirectory . '/Model/ModelBelongsToMany.php');
+					$reverseRelationshipStub = str_replace('{{foreign_model}}', CamelCase::convertToCamelCase($relationship->relatedTable), $reverseRelationshipOriginalStub);
+					$reverseRelationshipStub = str_replace('{{foreign_key}}', $relationship->foreignKey, $reverseRelationshipStub);
+					$reverseRelationshipStub = str_replace('{{table_name}}', $relationship->tableName, $reverseRelationshipStub);
+					$reverseRelationshipStub = str_replace('{{related_field}}', $relationship->relatedField, $reverseRelationshipStub);
+					$reverseRelationshipStub = str_replace('{{foreign_table}}', CamelCase::pluralize(strtolower($relationship->relatedTable)), $reverseRelationshipStub);
+				}
+				else {
+					$reverseRelationshipOriginalStub = File::get($this->stubsDirectory . '/Model/ModelReverseRelationship.php');
+					$reverseRelationshipStub = str_replace('{{foreign_model}}', $relationship->modelName, $reverseRelationshipOriginalStub);
+					$reverseRelationshipStub = str_replace('{{field}}', $relationship->foreignKey, $reverseRelationshipStub);
+					$reverseRelationshipStub = str_replace('{{foreign_field}}', $relationship->localKey, $reverseRelationshipStub);
+					$reverseRelationshipStub = str_replace('{{type}}', $relationship->type, $reverseRelationshipStub);
+					$reverseRelationshipStub = str_replace('{{foreign_table}}', $functionName, $reverseRelationshipStub);
+				}
+					
+				$reverseRelationshipStub = str_replace('{{model_namespace}}', $this->scaffolderConfig->generator->namespaces->models, $reverseRelationshipStub);
+				
+				$functions .= $reverseRelationshipStub ;
+
+				if(isset($relationship->foreignKey->eager) && $relationship->foreignKey->eager){
+					array_push($eagerArray, "'".$relationship->foreignKey->table."'");
+				}
+			}
+
+			
+>>>>>>> cc0dae1e6ae9e669d78b7fe68022a5ef4322943d
 		}
 
 		$this->stub = str_replace('{{reverseRelationship}}', $functions, $this->stub);
@@ -401,6 +461,7 @@ class ModelCompiler extends AbstractCompiler
 		$joinSorts = "";
 
 		$method = File::get($this->stubsDirectory . '/Model/ModelRelationshipTable.php');
+<<<<<<< HEAD
 		
 		if(isset($this->modelData->reverseRelationships)){
 			foreach ($this->modelData->reverseRelationships as $relationship) {
@@ -458,6 +519,63 @@ class ModelCompiler extends AbstractCompiler
 
 					$includes .= $use . "\n";
 				}
+=======
+
+		foreach ($this->modelData->reverseRelationships as $relationship) {
+
+			if ($relationship->type == "belongsToMany") {
+				$relatedTablePluralized = CamelCase::pluralize($relationship->relatedTable);
+				$relatedTablePluralizedUc = CamelCase::pluralize(CamelCase::convertToCamelCase($relationship->relatedTable));
+
+				$replacedMethod = '';
+				$replacedMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $method);
+				$replacedMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $replacedMethod);
+				$replacedMethod = str_replace('{{related_table_pl}}', $relatedTablePluralized, $replacedMethod);
+				$replacedMethod = str_replace('{{foreign_key}}', $relationship->foreignKey, $replacedMethod);
+				$replacedMethod = str_replace('{{related_field}}', $relationship->relatedField, $replacedMethod);
+				$replacedMethod = str_replace('{{foreign_table_lw}}', strtolower($relationship->modelName), $replacedMethod);
+				$replacedMethod = str_replace('{{foreign_table}}', $relationship->modelName, $replacedMethod);
+
+				$functions .= $replacedMethod;
+
+				$methodCall = 'if (array_key_exists(\'{{related_table_pl}}\', $vars))';
+				$methodCall .= "\n\t\t\t";
+				$methodCall .= '$this->save{{related_table_pl_uc}}($vars, ${{class_name_lw}});';
+				$methodCall = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $methodCall);
+				$methodCall = str_replace('{{related_table_pl}}', $relatedTablePluralized, $methodCall);
+				$methodCall = str_replace('{{class_name_lw}}', $this->modelData->tableName, $methodCall);
+
+				$functionsCall .= $methodCall . "\n\t\t";
+				
+				$removeAllMethod = File::get($this->stubsDirectory . '/Controller/ControllerRemoveAll.php');
+				$removeAllMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $removeAllMethod);
+				$removeAllMethod = str_replace('{{foreign_key}}', $relationship->foreignKey, $removeAllMethod);
+				$removeAllMethod = str_replace('{{foreign_table}}', $relationship->modelName, $removeAllMethod);
+				$removeAllMethod = str_replace('{{foreign_table_lw_pl}}', CamelCase::pluralize(strtolower($relationship->modelName)), $removeAllMethod);
+				
+				$removeAll .= $removeAllMethod;
+
+				$removeAllCallMethod = '$this->deleteAll{{related_table_pl_uc}}(${{class_name_lw}}[\'id\']);';
+				$removeAllCallMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $removeAllCallMethod);
+				$removeAllCallMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $removeAllCallMethod);
+				
+				$removeAllCall .= $removeAllCallMethod . "\n\t\t";
+
+				$joinRelationshipTableStub = File::get($this->stubsDirectory . 'SearchConditions/joinRelationshipTable.php');
+				$joinRelationshipTableStub = str_replace('{{class_name_lw}}', $this->modelData->tableName, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{related_table_pl}}', $relatedTablePluralized, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{related_table}}', CamelCase::convertToCamelCase($relationship->relatedTable), $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{foreign_key}}', $relationship->foreignKey, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{related_field}}', $relationship->relatedField, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{foreign_table}}', $relationship->tableName, $joinRelationshipTableStub);
+
+				$joins .= $joinRelationshipTableStub . "\n";
+
+				$use = 'use App\Models\{{foreign_table}};';
+				$use = str_replace('{{foreign_table}}', $relationship->modelName, $use);
+
+				$includes .= $use . "\n";
+>>>>>>> cc0dae1e6ae9e669d78b7fe68022a5ef4322943d
 			}
 		}
 
@@ -596,6 +714,7 @@ class ModelCompiler extends AbstractCompiler
 		$functions = '';
 
 		$method = File::get($this->stubsDirectory . '/Model/ModelReverseRelationshipFunctions.php');
+<<<<<<< HEAD
 		
 		if(isset($this->modelData->reverseRelationships)){
 			foreach ($this->modelData->reverseRelationships as $relationship)
@@ -615,6 +734,25 @@ class ModelCompiler extends AbstractCompiler
 
 				$functions .= $replacedMethod;
 			}
+=======
+
+		foreach ($this->modelData->reverseRelationships as $relationship)
+		{
+			$functionName = '';
+			if ($relationship->type == "hasOne")
+				$functionName = strtolower($relationship->modelName);
+			elseif ($relationship->type == "belongsToMany") 
+				$functionName = CamelCase::pluralize(strtolower($relationship->relatedTable));
+			else 
+				$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
+
+			$replacedMethod = '';
+			$replacedMethod = str_replace('{{function_name}}', $functionName, $method);
+			$replacedMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $replacedMethod);
+			$replacedMethod = str_replace('{{class_name}}', ucwords($this->modelData->tableName), $replacedMethod);
+
+			$functions .= $replacedMethod;
+>>>>>>> cc0dae1e6ae9e669d78b7fe68022a5ef4322943d
 		}
 
 		$this->stub = str_replace('{{reverseRelationshipFunctions}}', $functions, $this->stub);

@@ -64,73 +64,73 @@ class MigrationCompiler extends AbstractCompiler
 		// Check primary key
 		# TODO FIX, primary
 		if(isset($modelData->fields) && count($modelData->fields) == 0){
-		foreach ($this->modelData->fields as $field)
-		{
-			$parsedModifiers = '';
-
-			if($field->index == "primary")
-				continue ;
-			if($this->modelData->timeStamps && $field->name == "created_at")
-				continue ;
-			if($this->modelData->timeStamps && $field->name == "updated_at")
-				continue ;
-
-			// Check modifiers
-			if (!empty($field->modifiers))
+			foreach ($this->modelData->fields as $field)
 			{
-				$modifiersArray = explode(':', $field->modifiers);
+				$parsedModifiers = '';
 
-				foreach ($modifiersArray as $modifier)
+				if($field->index == "primary")
+					continue ;
+				if($this->modelData->timeStamps && $field->name == "created_at")
+					continue ;
+				if($this->modelData->timeStamps && $field->name == "updated_at")
+					continue ;
+
+				// Check modifiers
+				if (!empty($field->modifiers))
 				{
-					$modifierAndValue = explode(',', $modifier);
+					$modifiersArray = explode(':', $field->modifiers);
 
-					if (count($modifierAndValue) == 2)
+					foreach ($modifiersArray as $modifier)
 					{
-						$parsedModifiers .= '->' . $modifierAndValue[0] . '(' . $modifierAndValue[1] . ')';
-					}
-					else
-					{
-						$parsedModifiers .= '->' . $modifierAndValue[0] . '()';
+						$modifierAndValue = explode(',', $modifier);
+
+						if (count($modifierAndValue) == 2)
+						{
+							$parsedModifiers .= '->' . $modifierAndValue[0] . '(' . $modifierAndValue[1] . ')';
+						}
+						else
+						{
+							$parsedModifiers .= '->' . $modifierAndValue[0] . '()';
+						}
 					}
 				}
-			}
 
-			// Check foreign key for unsigned modifier
-			if ($field->foreignKey)
-			{
-				$parsedModifiers .= '->unsigned()';
-			}
+				// Check foreign key for unsigned modifier
+				if ($field->foreignKey)
+				{
+					$parsedModifiers .= '->unsigned()';
+				}
 
-			// Check indexes
-			if ($field->index != 'none')
-			{
-				$fields .= sprintf("\t\t\t\$table->%s('%s')%s->%s();" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers, $field->index);
-			}
-			else
-			{
-				if ($field->type->db == "enum") {
-					$items = '';
-					foreach ($field->options as $key => $option) {
-						$items .= "'" . $option . "'";
-						if ($key < (count($field->options) - 1))
-							$items .= ", ";
-					}
-
-					$fields .= sprintf("\t\t\t\$table->%s('%s', array(%s));" . PHP_EOL, $field->type->db, $field->name, $items);
+				// Check indexes
+				if ($field->index != 'none')
+				{
+					$fields .= sprintf("\t\t\t\$table->%s('%s')%s->%s();" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers, $field->index);
 				}
 				else
-					$fields .= sprintf("\t\t\t\$table->%s('%s')%s;" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers);
-			}
+				{
+					if ($field->type->db == "enum") {
+						$items = '';
+						foreach ($field->options as $key => $option) {
+							$items .= "'" . $option . "'";
+							if ($key < (count($field->options) - 1))
+								$items .= ", ";
+						}
 
-			// Check foreign key
-			if ($field->foreignKey)
-			{
-				$fields .= sprintf("\t\t\t\$table->foreign('%s')->references('%s')->on('%s');" . PHP_EOL . PHP_EOL, $field->name, $field->foreignKey->field, $field->foreignKey->table);
+						$fields .= sprintf("\t\t\t\$table->%s('%s', array(%s));" . PHP_EOL, $field->type->db, $field->name, $items);
+					}
+					else
+						$fields .= sprintf("\t\t\t\$table->%s('%s')%s;" . PHP_EOL, $field->type->db, $field->name, $parsedModifiers);
+				}
+
+				// Check foreign key
+				if ($field->foreignKey)
+				{
+					$fields .= sprintf("\t\t\t\$table->foreign('%s')->references('%s')->on('%s');" . PHP_EOL . PHP_EOL, $field->name, $field->foreignKey->field, $field->foreignKey->table);
+				}
 			}
 		}
-	}
 		
-	if(isset($this->modelData->timeStamps))
+		if(isset($this->modelData->timeStamps))
 			$fields .= PHP_EOL . "\t\t\t\$table->timestamps();" . PHP_EOL;
 
 		$this->stub = str_replace('{{fields}}', $fields, $this->stub);
