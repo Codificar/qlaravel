@@ -1,0 +1,43 @@
+{
+    "name": "codificar/scaffolder",
+    "description": "Laravel scaffolder",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "model",
+        "migration",
+        "seed",
+        "crud",
+        "scaffold",
+        "generator"
+    ],
+    "authors": [
+        {
+            "name": "Michael Paleo",
+            "email": "github@michaelpaleo.com"
+        },
+        {
+            "name": "Raphael Canguçu",
+            "email": "raphael.cangucu@codificar.com.br"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9" ,
+        "barryvdh/laravel-cors": "0.7.x",
+        "resultsystems/validation": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "orchestra/testbench": "~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Scaffolder\\": "src/Scaffolder/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/PackageTestCase.php"
+        ]
+    }
+}

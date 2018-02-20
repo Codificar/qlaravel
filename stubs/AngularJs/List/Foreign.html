@@ -1,0 +1,22 @@
+
+						<md-input-container class="md-block input form-item-input">
+							<label translate>{{table_name}}.columns.{{field}}</label>
+							<md-autocomplete cd-autocomplete 
+								ng-disabled="dir.isDisabled"
+								md-no-cache="dir.noCache"
+								md-selected-item="dir.selectedItem"
+								md-search-text-change="dir.searchTextChange(dir.searchText)"
+								md-search-text="dir.searchText"
+								md-selected-item-change="dir.selectedItemChange(item); vm.searchParams.filters.{{table_name}}.{{field}} = item.id"
+								md-items="item in dir.querySearch(dir.searchText)"
+								md-item-text="item.text"
+								md-min-length="0"
+								url="{{ vm.api.baseUrl }}/api/{{foreign_table}}/query"
+								ng-init="vm.{{table_name}}.{{field}} = item.id"> 
+
+							<md-item-template>
+								<span md-highlight-text="dir.searchText" md-highlight-flags="^i"> {{ item.name }} </span>
+							</md-item-template>
+							
+						  </md-autocomplete>
+						</md-input-container>	

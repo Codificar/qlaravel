@@ -1,0 +1,1 @@
+use {{model_namespace}}\{{foreign_model_name}} ;

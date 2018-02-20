@@ -1,0 +1,27 @@
+
+<!-- auto complete  -->
+        
+        <div class="input-auto-complete">
+         <div class="form-title form-title-scaffolder"> Auto complete</div>
+
+         <md-autocomplete
+          ng-disabled="vm.isDisabled"
+          md-no-cache="vm.noCache"
+          md-selected-item="vm.selectedItem"
+          md-search-text-change="vm.searchTextChange(vm.searchText)"
+          md-search-text="item.text"
+          md-selected-item-change="vm.selectedItemChange(item)"
+          md-items="item in vm.items"
+          md-item-text="item.text"
+          md-min-length="0"
+          placeholder="Digite alguma coisa...">
+
+
+          <md-item-template>
+           <span md-highlight-text="vm.searchText" md-highlight-flags="^i">{{item.text}}</span>
+          </md-item-template>
+          <md-not-found>
+           Nenhum item para selecionar.
+          </md-not-found>
+         </md-autocomplete>
+        </div>

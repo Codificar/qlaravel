@@ -1,0 +1,43 @@
+							
+
+
+					<!-- foto de perfil  -->
+
+					<div class="input-photo-upload label-options-multiple-upload">
+
+						<div class="form-title form-title-scaffolder"> Foto de perfil </div> 
+
+						<fieldset class="fieldset-upload simple-upload">
+							<div class="flow-upload flow ng-scope flex-gt-sm-50 flex-100" flow-init="vm.optionsFlow(true)" flow-file-added="!!{png:1,gif:1,jpg:1,jpeg:1}[$file.getExtension()]" flow-files-submitted="vm.upload( $files, $event, $flow )" flow-file-success="vm.user.image_id = vm.setFileName( $file, $message, $flow )" flow-file-error="vm.uploadError( $file, $message, $flow )" flow-upload-started="vm.uploadStarted($files, $event, $flow)" flex="100" flex-gt-sm="50">
+
+								<div class="area-photo-upload md-block area-image-single layout-row flex-100" layout="row" flex="100">
+									<div class="no-image ng-binding ng-scope" ng-if="$flow.files.length == 0 &amp;&amp; !vm.user.image_id">
+										<!-- Sem imagem -->
+										<img src="assets/images/scaffolder/user.jpg">
+									</div>
+									<img resize="150" flow-img="$flow.files[0]" />
+								</div>
+								<div class="area-options-upload">
+								<label class="label-upload ng-binding">
+									{{ 'register.fields.upload_image.simple' | translate }}
+								</label>
+								<div class="buttons">
+									<button class="md-raised md-accent button-remove-image button-form md-button md-ink-ripple md-default-theme" type="button" ng-click="vm.remove($flow)" aria-label="Remover">
+										<i class="icon icon-cancel icon-button-form ng-scope"></i>
+										<span class="ng-binding ng-scope">
+											Remover
+										</span>
+									</button>
+									<div class="md-raised md-accent button-form button-file-upload md-button md-ink-ripple md-default-theme">
+										<i class="icon icon-upload icon-button-form vertical-position"></i>
+										<span class="vertical-position ng-binding">
+											Selecionar imagem
+											<span>
+												<input type="file" class="upload-file-original" flow-btn="">
+											</span>
+										</span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>

@@ -1,0 +1,5 @@
+
+							<md-input-container class="md-block form-item-input">
+								<label translate>typelist.columns.cpf</label>
+								<input cd-cpf cd-unique="{{ apiResolver.baseUrl }}/api/{{table_name}}/findby/?field={{field}}&value=" name="{{field}}" ng-model="vm.{{eager_table}}{{table_name}}.{{field}}" placeholder="000.000.000-00" {{field_validation}}>      
+							</md-input-container>

@@ -1,0 +1,10 @@
+								
+								<md-input-container class="md-block form-item-input">
+									<label translate>{{table_name}}.columns.{{field}}</label>
+									<cd-enum
+										url="{{ vm.api.baseUrl }}/api/{{table_name}}/{{field}}"
+										ng-model="vm.{{eager_table}}{{table_name}}.{{field}}"
+										selected-value="{{vm.{{eager_table}}{{table_name}}.{{field}}}}"
+										{{field_validation}}>
+									</cd-enum>
+								</md-input-container>

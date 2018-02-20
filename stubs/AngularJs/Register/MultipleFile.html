@@ -1,0 +1,52 @@
+								
+								<label class="label-upload">{{ 'common_words.file_uploads_description' | translate }}</label>  
+								<div class="flow" flow-init="vm.optionsFlow(false)"
+									flow-files-submitted="vm.upload( $files, $event, $flow )"
+									flow-file-success="vm.{{eager_table}}{{table_name}}.{{field}}=vm.setFileName( $file, $message, $flow )"> 				 					
+
+									<div class="area-photo-upload md-block" ng-init="vm.getImages(vm.{{eager_table}}{{table_name}}.{{field}})" ng-class="{'area-image-single': vm.optionsFlow.singleFile == true}" layout="row" flex="100">
+										<div class="file-area" ng-repeat="file in vm.file" ng-init="file.show=true" ng-show="file.show">
+											<div > 												
+												<md-icon class="file-icon" md-font-icon="icon-file-outline" class="s16"></md-icon>
+												<div class="file-name">{{file.filename}}</div> 
+											</div>
+
+											<md-button ng-show="!vm.optionsFlow.singleFile" class="md-raised md-accent button-delete button-form" ng-click="vm.{{eager_table}}{{table_name}}.{{field}}=vm.removeByValue(file.id); file.show=false;">
+												<i class="icon icon-cancel icon-button-form"></i>
+												{{ 'common_words.remove' | translate }}
+											</md-button>
+											<md-progress-linear md-mode="determinate" value="0"></md-progress-linear>
+										</div>
+										<div 
+											class="file-area"
+											ng-repeat="file in $flow.files" 
+											ng-if="$flow.files.length != 0">
+									
+											<div > 												
+												<md-icon class="file-icon" md-font-icon="icon-file-outline" class="s16"></md-icon>
+												<div class="file-name">{{file.name}}</div> 
+											</div>
+
+											
+											<md-button ng-show="!vm.optionsFlow.singleFile" class="md-raised md-accent button-delete button-form" ng-click="$flow.removeFile(file); vm.{{eager_table}}{{table_name}}.{{field}}=vm.removeByIndex($index+vm.fileLength)">
+												<i class="icon icon-cancel icon-button-form"></i>
+												{{ 'common_words.remove' | translate }}
+											</md-button>
+
+											<md-progress-linear md-mode="determinate" value="{{file.progress}}" ng-if="!file.imageShow"></md-progress-linear>
+										</div> 
+										
+									</div>
+ 
+									<div layout="row">
+										<md-button ng-show="vm.optionsFlow.singleFile" class="md-raised md-accent button-delete button-form">
+											<i class="icon icon-cancel icon-button-form"></i>
+											{{ 'common_words.remove' | translate }}
+										</md-button>
+										<md-button class="md-raised md-accent button-form button-file-upload">  
+											<i class="icon icon-upload icon-button-form"></i>
+											{{ 'common_words.file_uploads' | translate }}
+											<input type="file" class="upload-file-original" flow-btn/>  
+										</md-button> 
+									</div>
+								</div>

@@ -1,0 +1,36 @@
+								
+								<label class="label-upload">{{ 'common_words.file_upload_description' | translate }}</label>  
+ 								<div class="flow" flow-init="vm.optionsFlow(true)"
+									flow-files-submitted="vm.upload( $files, $event, $flow )"
+									flow-file-success="vm.{{table_name}}.{{field}}=vm.setFileName( $file, $message, $flow )"> 				 					
+
+									<div class="area-photo-upload single-upload md-block" layout="row" flex="100">
+										<div ng-init="vm.getImg(vm.{{eager_table}}{{table_name}}.{{field}})" ng-if="$flow.files.length == 0 && vm.{{eager_table}}{{table_name}}.{{field}}"> 												
+											<md-icon class="file-icon" md-font-icon="icon-file-outline" class="s16"></md-icon>
+											<div class="file-name">{{vm.file.filename}}</div> 
+										</div>
+										<div 
+											class="file-area"
+											ng-repeat="file in $flow.files" 
+											ng-if="$flow.files.length != 0">
+									 
+											<div ng-if="!vm.{{eager_table}}{{table_name}}.{{field}}"> 												
+												<md-icon class="file-icon" md-font-icon="icon-file-outline" class="s16"></md-icon>
+												<div class="file-name">{{file.name}}</div> 
+											</div>		
+										</div>  
+									</div>
+ 
+									<div layout="row">
+										<md-button ng-if="$flow.files.length != 0 || vm.{{eager_table}}{{table_name}}.{{field}}" class="md-raised md-accent button-delete button-form" ng-click="vm.{{eager_table}}{{table_name}}.{{field}}=''; vm.files=[]; $flow.files=[]">
+											<i class="icon icon-cancel icon-button-form"></i>
+											{{ 'common_words.remove' | translate }}  
+										</md-button>
+										<md-button class="md-raised md-accent button-form button-file-upload">  
+											<i class="icon icon-upload icon-button-form"></i>
+											{{ 'common_words.file_upload' | translate }}
+											<input type="file" class="upload-file-original" flow-btn/>  
+										</md-button> 
+									</div>
+
+								</div>
