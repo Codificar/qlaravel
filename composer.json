@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": ">=5.5.9" ,
-        "barryvdh/laravel-cors": "0.7.x",
+        "barryvdh/laravel-cors": "^0.11.0",
         "resultsystems/validation": "^5.1"
     },
     "require-dev": {
