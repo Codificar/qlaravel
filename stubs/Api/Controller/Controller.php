@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace {{namespace}};
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;

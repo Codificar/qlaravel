@@ -2,7 +2,7 @@
 		if(isset($filters["{{table_name}}"])){
 			${{table_name}}Conditions = $filters["{{table_name}}"] ;
 
-			if($params["simpleFilter"])
+			if(isset($params["simpleFilter"]) && $params["simpleFilter"])
 			{
 				{{simple_filter}}
 			} else {

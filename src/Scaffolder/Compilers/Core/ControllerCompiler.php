@@ -29,7 +29,8 @@ class ControllerCompiler extends AbstractCompiler
 	public function replaceAndStore()
 	{
 		
-		return $this->replacePrimaryKey()
+		return 		$this->replaceNamespace()
+					->replacePrimaryKey()
 					->replaceEagerCode()
 					->replaceUniqueRules()
 					->replaceSearchConditions()
@@ -42,6 +43,18 @@ class ControllerCompiler extends AbstractCompiler
 					->replaceRelationshipTables()
 					->store(new FileToCompile(false, $this->modelData->modelHash));
 		
+	}
+
+	/**
+	 * Replace the namespace.
+	 *
+	 * @return $this
+	 */
+	protected function replaceNamespace()
+	{
+		$this->stub = str_replace('{{namespace}}', $this->scaffolderConfig->generator->namespaces->controllers, $this->stub);
+
+		return $this;
 	}
 
 

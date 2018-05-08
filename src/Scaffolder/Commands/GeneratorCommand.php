@@ -598,7 +598,7 @@ class GeneratorCommand extends Command
 
 			$positions = array_keys($modelsData);
 
-			if(isset($modelData->migrationPreRequisites)){
+			if(isset($modelData->migrationPreRequisites) && is_array($modelData->migrationPreRequisites)){
 				
 				foreach($modelData->migrationPreRequisites as $preRequiste){
 					$preRequisitePosition = array_search($preRequiste, $positions);
