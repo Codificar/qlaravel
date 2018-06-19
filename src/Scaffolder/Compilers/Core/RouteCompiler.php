@@ -102,28 +102,28 @@ class RouteCompiler extends AbstractCompiler
 	public function replaceReverseRelationships($modelData)
 	{
 		$functions = '';
-		if(isset($modelData->reverseRelationships) && $modelData->reverseRelationships){
-			foreach ($modelData->reverseRelationships as $relationship)
+
+		foreach ($modelData->reverseRelationships as $relationship)
+		{
+			if ($relationship)
 			{
-				if ($relationship)
-				{
-					$functionName = '';
-					if ($relationship->type == "hasOne")
-						$functionName = strtolower($relationship->modelName);
-					elseif ($relationship->type == "belongsToMany") 
-						$functionName = CamelCase::pluralize(strtolower($relationship->relatedTable));
-					else 
-						$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
+				$functionName = '';
+				if ($relationship->type == "hasOne")
+					$functionName = strtolower($relationship->modelName);
+				elseif ($relationship->type == "belongsToMany") 
+					$functionName = CamelCase::pluralize(strtolower($relationship->relatedTable));
+				else 
+					$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
 
-					$method = "\tRoute::get('{{resource_lw}}/{id}/{{function_name}}', '{{resource}}Controller@{{function_name}}');\n";
-					$method = str_replace('{{resource_lw}}', strtolower($modelData->modelName), $method);
-					$method = str_replace('{{function_name}}', $functionName, $method);
-					$method = str_replace('{{resource}}', $modelData->modelName, $method);
+				$method = "\tRoute::get('{{resource_lw}}/{id}/{{function_name}}', '{{resource}}Controller@{{function_name}}');\n";
+				$method = str_replace('{{resource_lw}}', strtolower($modelData->modelName), $method);
+				$method = str_replace('{{function_name}}', $functionName, $method);
+				$method = str_replace('{{resource}}', $modelData->modelName, $method);
 
-					$functions .= $method;
-				}
+				$functions .= $method;
 			}
 		}
+
 		return $functions;
 	}
 

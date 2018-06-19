@@ -29,8 +29,7 @@ class ControllerCompiler extends AbstractCompiler
 	public function replaceAndStore()
 	{
 		
-		return 		$this->replaceNamespace()
-					->replacePrimaryKey()
+		return $this->replacePrimaryKey()
 					->replaceEagerCode()
 					->replaceUniqueRules()
 					->replaceSearchConditions()
@@ -43,18 +42,6 @@ class ControllerCompiler extends AbstractCompiler
 					->replaceRelationshipTables()
 					->store(new FileToCompile(false, $this->modelData->modelHash));
 		
-	}
-
-	/**
-	 * Replace the namespace.
-	 *
-	 * @return $this
-	 */
-	protected function replaceNamespace()
-	{
-		$this->stub = str_replace('{{namespace}}', $this->scaffolderConfig->generator->namespaces->controllers, $this->stub);
-
-		return $this;
 	}
 
 
@@ -291,24 +278,23 @@ class ControllerCompiler extends AbstractCompiler
 		$functions = '';
 
 		$method = File::get($this->stubsDirectory . '/Controller/ControllerReverseRelationship.php');
-		if(isset($this->modelData->reverseRelationships)){
-			foreach ($this->modelData->reverseRelationships as $relationship)
-			{
-				$functionName = '';
-				if ($relationship->type == "hasOne")
-					$functionName = strtolower($relationship->modelName);
-				elseif ($relationship->type == "belongsToMany") 
-					$functionName = CamelCase::pluralize(strtolower($relationship->relatedTable));
-				else 
-					$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
 
-				$replacedMethod = '';
-				$replacedMethod = str_replace('{{function_name}}', $functionName, $method);
-				$replacedMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $replacedMethod);
-				$replacedMethod = str_replace('{{class_name}}', ucwords($this->modelData->tableName), $replacedMethod);
+		foreach ($this->modelData->reverseRelationships as $relationship)
+		{
+			$functionName = '';
+			if ($relationship->type == "hasOne")
+				$functionName = strtolower($relationship->modelName);
+			elseif ($relationship->type == "belongsToMany") 
+				$functionName = CamelCase::pluralize(strtolower($relationship->relatedTable));
+			else 
+				$functionName = CamelCase::pluralize(strtolower($relationship->modelName));
 
-				$functions .= $replacedMethod;
-			}
+			$replacedMethod = '';
+			$replacedMethod = str_replace('{{function_name}}', $functionName, $method);
+			$replacedMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $replacedMethod);
+			$replacedMethod = str_replace('{{class_name}}', ucwords($this->modelData->tableName), $replacedMethod);
+
+			$functions .= $replacedMethod;
 		}
 
 		$this->stub = str_replace('{{reverseRelationships}}', $functions, $this->stub);
@@ -362,62 +348,61 @@ class ControllerCompiler extends AbstractCompiler
 		$joinSorts = "";
 
 		$method = File::get($this->stubsDirectory . '/Controller/ControllerRelationshipTable.php');
-		if(isset($this->modelData->reverseRelationships)){
-			foreach ($this->modelData->reverseRelationships as $relationship) {
 
-				if ($relationship->type == "belongsToMany") {
-					$relatedTablePluralized = CamelCase::pluralize($relationship->relatedTable);
-					$relatedTablePluralizedUc = CamelCase::pluralize(CamelCase::convertToCamelCase($relationship->relatedTable));
+		foreach ($this->modelData->reverseRelationships as $relationship) {
 
-					$replacedMethod = '';
-					$replacedMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $method);
-					$replacedMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $replacedMethod);
-					$replacedMethod = str_replace('{{related_table_pl}}', $relatedTablePluralized, $replacedMethod);
-					$replacedMethod = str_replace('{{foreign_key}}', $relationship->foreignKey, $replacedMethod);
-					$replacedMethod = str_replace('{{related_field}}', $relationship->relatedField, $replacedMethod);
-					$replacedMethod = str_replace('{{foreign_table_lw}}', strtolower($relationship->modelName), $replacedMethod);
-					$replacedMethod = str_replace('{{foreign_table}}', $relationship->modelName, $replacedMethod);
+			if ($relationship->type == "belongsToMany") {
+				$relatedTablePluralized = CamelCase::pluralize($relationship->relatedTable);
+				$relatedTablePluralizedUc = CamelCase::pluralize(CamelCase::convertToCamelCase($relationship->relatedTable));
 
-					$functions .= $replacedMethod;
+				$replacedMethod = '';
+				$replacedMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $method);
+				$replacedMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $replacedMethod);
+				$replacedMethod = str_replace('{{related_table_pl}}', $relatedTablePluralized, $replacedMethod);
+				$replacedMethod = str_replace('{{foreign_key}}', $relationship->foreignKey, $replacedMethod);
+				$replacedMethod = str_replace('{{related_field}}', $relationship->relatedField, $replacedMethod);
+				$replacedMethod = str_replace('{{foreign_table_lw}}', strtolower($relationship->modelName), $replacedMethod);
+				$replacedMethod = str_replace('{{foreign_table}}', $relationship->modelName, $replacedMethod);
 
-					$methodCall = 'if (array_key_exists(\'{{related_table_pl}}\', $vars))';
-					$methodCall .= "\n\t\t\t";
-					$methodCall .= '$this->save{{related_table_pl_uc}}($vars, ${{class_name_lw}});';
-					$methodCall = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $methodCall);
-					$methodCall = str_replace('{{related_table_pl}}', $relatedTablePluralized, $methodCall);
-					$methodCall = str_replace('{{class_name_lw}}', $this->modelData->tableName, $methodCall);
+				$functions .= $replacedMethod;
 
-					$functionsCall .= $methodCall . "\n\t\t";
-					
-					$removeAllMethod = File::get($this->stubsDirectory . '/Controller/ControllerRemoveAll.php');
-					$removeAllMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $removeAllMethod);
-					$removeAllMethod = str_replace('{{foreign_key}}', $relationship->foreignKey, $removeAllMethod);
-					$removeAllMethod = str_replace('{{foreign_table}}', $relationship->modelName, $removeAllMethod);
-					$removeAllMethod = str_replace('{{foreign_table_lw_pl}}', CamelCase::pluralize(strtolower($relationship->modelName)), $removeAllMethod);
-					
-					$removeAll .= $removeAllMethod;
+				$methodCall = 'if (array_key_exists(\'{{related_table_pl}}\', $vars))';
+				$methodCall .= "\n\t\t\t";
+				$methodCall .= '$this->save{{related_table_pl_uc}}($vars, ${{class_name_lw}});';
+				$methodCall = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $methodCall);
+				$methodCall = str_replace('{{related_table_pl}}', $relatedTablePluralized, $methodCall);
+				$methodCall = str_replace('{{class_name_lw}}', $this->modelData->tableName, $methodCall);
 
-					$removeAllCallMethod = '$this->deleteAll{{related_table_pl_uc}}(${{class_name_lw}}[\'id\']);';
-					$removeAllCallMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $removeAllCallMethod);
-					$removeAllCallMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $removeAllCallMethod);
-					
-					$removeAllCall .= $removeAllCallMethod . "\n\t\t";
+				$functionsCall .= $methodCall . "\n\t\t";
+				
+				$removeAllMethod = File::get($this->stubsDirectory . '/Controller/ControllerRemoveAll.php');
+				$removeAllMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $removeAllMethod);
+				$removeAllMethod = str_replace('{{foreign_key}}', $relationship->foreignKey, $removeAllMethod);
+				$removeAllMethod = str_replace('{{foreign_table}}', $relationship->modelName, $removeAllMethod);
+				$removeAllMethod = str_replace('{{foreign_table_lw_pl}}', CamelCase::pluralize(strtolower($relationship->modelName)), $removeAllMethod);
+				
+				$removeAll .= $removeAllMethod;
 
-					$joinRelationshipTableStub = File::get($this->stubsDirectory . 'SearchConditions/joinRelationshipTable.php');
-					$joinRelationshipTableStub = str_replace('{{class_name_lw}}', $this->modelData->tableName, $joinRelationshipTableStub);
-					$joinRelationshipTableStub = str_replace('{{related_table_pl}}', $relatedTablePluralized, $joinRelationshipTableStub);
-					$joinRelationshipTableStub = str_replace('{{related_table}}', CamelCase::convertToCamelCase($relationship->relatedTable), $joinRelationshipTableStub);
-					$joinRelationshipTableStub = str_replace('{{foreign_key}}', $relationship->foreignKey, $joinRelationshipTableStub);
-					$joinRelationshipTableStub = str_replace('{{related_field}}', $relationship->relatedField, $joinRelationshipTableStub);
-					$joinRelationshipTableStub = str_replace('{{foreign_table}}', $relationship->tableName, $joinRelationshipTableStub);
+				$removeAllCallMethod = '$this->deleteAll{{related_table_pl_uc}}(${{class_name_lw}}[\'id\']);';
+				$removeAllCallMethod = str_replace('{{related_table_pl_uc}}', $relatedTablePluralizedUc, $removeAllCallMethod);
+				$removeAllCallMethod = str_replace('{{class_name_lw}}', $this->modelData->tableName, $removeAllCallMethod);
+				
+				$removeAllCall .= $removeAllCallMethod . "\n\t\t";
 
-					$joins .= $joinRelationshipTableStub . "\n";
+				$joinRelationshipTableStub = File::get($this->stubsDirectory . 'SearchConditions/joinRelationshipTable.php');
+				$joinRelationshipTableStub = str_replace('{{class_name_lw}}', $this->modelData->tableName, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{related_table_pl}}', $relatedTablePluralized, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{related_table}}', CamelCase::convertToCamelCase($relationship->relatedTable), $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{foreign_key}}', $relationship->foreignKey, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{related_field}}', $relationship->relatedField, $joinRelationshipTableStub);
+				$joinRelationshipTableStub = str_replace('{{foreign_table}}', $relationship->tableName, $joinRelationshipTableStub);
 
-					$use = 'use App\Models\{{foreign_table}};';
-					$use = str_replace('{{foreign_table}}', $relationship->modelName, $use);
+				$joins .= $joinRelationshipTableStub . "\n";
 
-					$includes .= $use . "\n";
-				}
+				$use = 'use App\Models\{{foreign_table}};';
+				$use = str_replace('{{foreign_table}}', $relationship->modelName, $use);
+
+				$includes .= $use . "\n";
 			}
 		}
 

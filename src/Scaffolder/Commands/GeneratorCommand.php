@@ -563,7 +563,7 @@ class GeneratorCommand extends Command
 			}
 
 			// set timestamps
-			if(isset($modelData->timeStamps) && $modelData->timeStamps){
+			if($modelData->timeStamps){
 				$createdAtField = new stdClass;
 				$createdAtField->name = "created_at" ;
 				$createdAtField->index = "none" ;
@@ -583,7 +583,7 @@ class GeneratorCommand extends Command
 			$modelsData[$modelData->tableName] = $modelData ;
 
 			// put all migrations pre-requisites in top of generation hieraquical
-			if(isset($modelData->migrationPreRequisites) && count($modelData->migrationPreRequisites) == 0){
+			if(count($modelData->migrationPreRequisites) == 0){
 				$modelsData = Arrays::moveElement($modelsData, $modelData->tableName, 0);
 			}
 
@@ -598,20 +598,18 @@ class GeneratorCommand extends Command
 
 			$positions = array_keys($modelsData);
 
-			if(isset($modelData->migrationPreRequisites) && is_array($modelData->migrationPreRequisites)){
-				
-				foreach($modelData->migrationPreRequisites as $preRequiste){
-					$preRequisitePosition = array_search($preRequiste, $positions);
-					// change positions
-					if( $preRequisitePosition >  $actualTablePosition){
-						$modelData->migrationOrder = $preRequisitePosition ;
-						$modelsData[$preRequiste]->migrationOrder = $actualTablePosition ;
-						$modelsData = Arrays::moveElement($modelsData, $preRequiste, $actualTablePosition);
-						
-					}
+			foreach($modelData->migrationPreRequisites as $preRequiste){
+				$preRequisitePosition = array_search($preRequiste, $positions);
+				// change positions
+				if( $preRequisitePosition >  $actualTablePosition){
+					$modelData->migrationOrder = $preRequisitePosition ;
+					$modelsData[$preRequiste]->migrationOrder = $actualTablePosition ;
+					$modelsData = Arrays::moveElement($modelsData, $preRequiste, $actualTablePosition);
+					
 				}
 			}
-	
+
+
 			// search for other fields relationships
 			foreach($modelData->fields as $field){
 				
