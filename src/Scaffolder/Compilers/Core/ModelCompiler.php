@@ -147,44 +147,45 @@ class ModelCompiler extends AbstractCompiler
 		return $this;
 	}
 
-	/**
-	 * Set validations.
-	 *
-	 *
-	 * @return $this
-	 */
-	private function addRules()
-	{
-		$fields = '';
-		$firstIteration = true;
+	// /**
+	//  * Set validations.
+	//  *
+	//  *
+	//  * @return $this
+	//  * @deprecated use FormRequest instead. 
+	//  */
+	// private function addRules()
+	// {
+	// 	$fields = '';
+	// 	$firstIteration = true;
 
-		foreach ($this->modelData->fields as $field)
-		{
-			if($field->index == "primary")
-				continue ;
-			if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "created_at")
-				continue ;
-			if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "updated_at")
-				continue ;
+	// 	foreach ($this->modelData->fields as $field)
+	// 	{
+	// 		if($field->index == "primary")
+	// 			continue ;
+	// 		if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "created_at")
+	// 			continue ;
+	// 		if(isset($this->modelData->timeStamps) && $this->modelData->timeStamps && $field->name == "updated_at")
+	// 			continue ;
 
-			if ($firstIteration)
-			{
-				$fields .= sprintf("'%s' => '%s'," . PHP_EOL, $field->name, $field->validations);
-				$firstIteration = false;
-			}
-			else
-			{
-				$fields .= sprintf("\t\t\t'%s' => '%s'," . PHP_EOL, $field->name, $field->validations);
-			}
-		}
+	// 		if ($firstIteration)
+	// 		{
+	// 			$fields .= sprintf("'%s' => '%s'," . PHP_EOL, $field->name, $field->validations);
+	// 			$firstIteration = false;
+	// 		}
+	// 		else
+	// 		{
+	// 			$fields .= sprintf("\t\t\t'%s' => '%s'," . PHP_EOL, $field->name, $field->validations);
+	// 		}
+	// 	}
 
-		$fields = str_replace('unique','unique:'.$this->modelData->tableName,$fields);
-		//var_dump($fields);
+	// 	$fields = str_replace('unique','unique:'.$this->modelData->tableName,$fields);
+	// 	//var_dump($fields);
 
-		$this->stub = str_replace('{{validations}}', $fields, $this->stub);
+	// 	$this->stub = str_replace('{{validations}}', $fields, $this->stub);
 
-		return $this;
-	}
+	// 	return $this;
+	// }
 
 	/**
 	 * Set the timestamps value.

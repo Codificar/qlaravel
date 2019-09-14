@@ -27,9 +27,9 @@ class {{class_name}} extends Model
 	];
 
 	// validation rules 
-	public static $rules = 	[
-			{{validations}}
-	];
+	// public static $rules = 	[
+			// {{validations}}
+	// ];
 
 	// eager loading objects
 	public $with = [
@@ -44,8 +44,6 @@ class {{class_name}} extends Model
 	
 
 	//api resources
-
-
 
 	// save {{class_name_lw}}
 	public function store(Request $request)

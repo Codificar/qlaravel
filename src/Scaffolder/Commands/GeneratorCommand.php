@@ -5,6 +5,7 @@ namespace Scaffolder\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 // API classes
+use Scaffolder\Compilers\Core\FormRequestCompiler;
 use Scaffolder\Compilers\Core\ControllerCompiler;
 use Scaffolder\Compilers\Core\MigrationCompiler;
 use Scaffolder\Compilers\Core\ModelCompiler;
@@ -123,6 +124,7 @@ class GeneratorCommand extends Command
 
 		// Compiler output
 		$modelCompilerOutput = [];
+		$formRequestCompilerOutput = [];
 		$controllerCompilerOutput = [];
 		$migrationCompilerOutput = [];
 
@@ -147,6 +149,8 @@ class GeneratorCommand extends Command
 		Directory::createIfNotExists(PathParser::parse($scaffolderConfig->generator->paths->repositories), 0755, true);
 		// controllers
 		Directory::createIfNotExists(PathParser::parse($scaffolderConfig->generator->paths->controllers), 0755, true);
+		// formrequests
+		Directory::createIfNotExists(PathParser::parse($scaffolderConfig->generator->paths->formrequests), 0755, true);
 		// routes
 		Directory::createIfNotExists(PathParser::parse($scaffolderConfig->generator->paths->routes), 0755, true);
 		
@@ -166,9 +170,11 @@ class GeneratorCommand extends Command
 			$modelCompiler = new ModelCompiler($scaffolderConfig, $modelData, $stubModel);
 			$migrationCompiler = new MigrationCompiler($scaffolderConfig, $modelData);
 			$controllerCompiler = new ControllerCompiler($scaffolderConfig, $modelData, $stubController);
+			$formRequestCompiler = new FormRequestCompiler($scaffolderConfig, $modelData, $stubModel);
 
 			// Compile stubs
 			array_push($modelCompilerOutput, $modelCompiler->compile());
+			array_push($formRequestCompilerOutput, $formRequestCompiler->compile());
 			array_push($controllerCompilerOutput, $controllerCompiler->compile());
 			array_push($migrationCompilerOutput, $migrationCompiler->compile());
 			
@@ -195,6 +201,12 @@ class GeneratorCommand extends Command
 		foreach ($controllerCompilerOutput as $controllerFile)
 		{
 			$this->info('- - - ' . $controllerFile);
+		}
+		
+		$this->comment('- - FormRequests');
+		foreach ($formRequestCompilerOutput as $formRequestFile)
+		{
+			$this->info('- - - ' . $formRequestFile);
 		}
 
 		$this->comment('- - Migrations');
